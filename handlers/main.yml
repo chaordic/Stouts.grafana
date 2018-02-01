@@ -2,6 +2,7 @@
 
 - name: grafana restart
   service: name=grafana-server state=restarted
+  when: not grafana_container
 
 - name: nginx reload
   service: name=nginx state=reloaded

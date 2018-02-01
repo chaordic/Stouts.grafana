@@ -1,8 +1,20 @@
 ---
 
 - include: install.deb.yml
-  when: ansible_os_family == 'Debian'
+  when: (not grafana_container) and ansible_os_family == 'Debian'
+  tags: [grafana, grafana-install]
+
+- include: install_container.yml
+  when: grafana_container
   tags: [grafana, grafana-install]
 
 - include: configure.yml
+  when: not grafana_container
   tags: [grafana, grafana-configure]
+
+- include: configure_container.yml
+  when: grafana_container
+  tags: [grafana, grafana-configure]
+
+# - include: nginx.yml
+#   tags: [grafana, grafana-configure]

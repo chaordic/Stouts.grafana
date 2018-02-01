@@ -1,0 +1,23 @@
+---
+
+- name: grafana-configure | ensure directories
+  file:
+    state: directory
+    name: "{{ item }}"
+  with_items:
+    - /var/lib/grafana
+    - /var/log/grafana
+    - /etc/grafana
+
+- name: grafana-configure | Setup grafana
+  template:
+    src: "{{ item.src }}"
+    dest: "{{ item.dest }}"
+  with_items:
+    - src: grafana.ini.j2
+      dest: /etc/grafana/grafana.ini
+    - src: grafana-ldap.toml.j2
+      dest: /etc/grafana/ldap.toml
+    - src: docker-compose.yml.j2
+      dest: /etc/grafana/docker-compose.yml
+  notify: grafana restart

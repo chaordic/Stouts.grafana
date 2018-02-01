@@ -1,0 +1,13 @@
+{
+  "id": "{{ item.org_id }}",
+  "name": "{{ item.name }}",
+  "type": "{{ item.type }}",
+  "url": "{{ item.url_protocol }}://{{ item.url }}",
+  "access": "{{ item.access |d('proxy') }}",
+{%- if item.basic_auth is defined %}
+  "basicAuth": {{ item.basic_auth }},
+  "basicAuthUser": "{{ item.basicauth_user }}",
+  "basicAuthPassword": "{{ item.basicauth_password }}",
+{%- endif %}
+  "isDefault": {{ item.default |d(false) }}
+}

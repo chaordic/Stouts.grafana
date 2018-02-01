@@ -1,0 +1,81 @@
+---
+
+# Deploy container
+- name: deploy | stack
+  shell: >
+    docker stack deploy -c /etc/grafana/docker-compose.yml dash;
+  tags: grafana-deploy
+
+- name: deploy | update stack
+  shell: >
+    docker service update dash_grafana;
+  tags: deploy
+
+- name: GRAFANA | Check main datasource
+  uri:
+    url: "http://localhost:3000/api/datasources/{{ item.org_id }}"
+    method: GET
+    HEADER_Accept: application/json
+    HEADER_Content-Type: application/json
+    force_basic_auth: "{{ grafana_basic_auth |d('yes') }}"
+    user: "{{ grafana_admin_user |d(omit) }}"
+    password: "{{ grafana_admin_password |d(omit) }}"
+    body: "{{ lookup('template', 'templates/api-datasource.json.j2')}}"
+    body_format: json
+  with_items: "{{ grafana_datasources }}"
+  register: datasource_check
+  failed_when: false
+  when: grafana_state in ['started', 'restarted', 'reloaded']
+
+- name: GRAFANA | Import datasource
+  uri:
+    url: "http://localhost:3000/api/datasources"
+    method: POST
+    HEADER_Accept: application/json
+    HEADER_Content-Type: application/json
+    HEADER_Authorization: "Bearer {{ grafana_secret_key }}"
+    force_basic_auth: "{{ grafana_basic_auth |d('yes') }}"
+    user: "{{ grafana_admin_user |d(omit) }}"
+    password: "{{ grafana_admin_password |d(omit) }}"
+    body: "{{ lookup('template', 'templates/api-datasource.json.j2')}}"
+    body_format: json
+    response: 200
+  with_items: "{{ grafana_datasources }}"
+  when:
+    - datasource_check.status is defined
+    - datasource_check.status != 200
+    - grafana_state in ['started', 'restarted', 'reloaded']
+
+# - name: GRAFANA | Import stats dashboard
+#   uri:
+#     url: "http://localhost:3000/api/dashboards/db"
+#     method: POST
+#     HEADER_Accept: application/json
+#     HEADER_Content-Type: application/json
+#     force_basic_auth: yes
+#     user: "{{ grafana_admin_user }}"
+#     password: "{{ grafana_admin_password }}"
+#     body: "{{ lookup('template', 'templates/dashboards/prometheus_stats.json.j2')}}"
+#     body_format: json
+#     response: 200
+#   when:
+#     - grafana_datasource_type == 'prometheus'
+#     - grafana_service_state == 'started'
+
+- name: GRAFANA | Set Organisation
+  uri:
+    url: "http://localhost:3000/api/orgs/{{ item.org_id }}"
+    method: PUT
+    HEADER_Accept: application/json
+    HEADER_Content-Type: application/json
+    HEADER_Authorization: "Bearer {{ grafana_secret_key }}"
+    force_basic_auth: "{{ grafana_basic_auth |d('yes') }}"
+    user: "{{ grafana_admin_user |d(omit) }}"
+    password: "{{ grafana_admin_password |d(omit) }}"
+    body: "{{ lookup('template', 'templates/api-organization.json.j2')}}"
+    body_format: json
+    response: 200
+  with_items: "{{ grafana_organizations }}"
+  when:
+    - grafana_organisation is defined
+    - grafana_state == 'started'

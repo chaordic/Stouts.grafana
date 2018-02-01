@@ -1,0 +1,20 @@
+# Managed by Ansible - ansible-role-prometheus
+
+version: '3.2'
+
+networks:
+  net:
+
+services:
+  grafana:
+    image: "grafana/grafana:{{ grafana_version }}"
+    ports:
+      - 3000:3000
+    volumes:
+      - /etc/grafana/:/etc/grafana/
+      - /var/lib/grafana/:/var/lib/grafana/
+      - /var/log/grafana/:/var/log/grafana/
+    #env_file:
+    #  - {{ dash_docker_env_file }}
+    networks:
+      - net
