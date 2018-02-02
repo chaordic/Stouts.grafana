@@ -112,6 +112,9 @@ grafana_auth_proxy_auto_sign_up: true
 # Auth LDAP
 grafana_auth_ldap_enabled: false
 grafana_auth_ldap_config_file: /etc/grafana/ldap.toml
+grafana_auth_map_default_group_cn: "cn=grafana-*,cn=groups,cn=accounts"
+grafana_auth_map_default_role: "Viewer"
+
 
 # SMTP / Emailing
 grafana_smtp_enabled: false

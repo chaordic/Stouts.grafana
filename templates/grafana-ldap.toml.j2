@@ -4,7 +4,7 @@ verbose_logging = false
 
 [[servers]]
 host = "{{ grafana_auth_ldap_host |d('') }}"
-port = "{{ grafana_auth_ldap_port |d('389') }}"
+port = {{ grafana_auth_ldap_port |d(389) }}
 
 use_ssl = false
 start_tls = false
@@ -33,17 +33,65 @@ username = "uid"
 member_of = "memberOf"
 email =  "email"
 
+############
+# Users role
+#- Editor: Can create & edit dashboads
+#- Viewer: Can not create dashboards nor edit panels
+#- Read only editor: Can not create dashboards nor save changes to them,
+#  but they can edit panels and create new panels (But not save)
+
+#######################################################
+# LDAP Group mapping
+
+{%- for g in grafana_ldap_group_mappings %}
+{% if g.orgs_all is defined and g.orgs_all %}
+## Mapping ALL Organizations for group {{ g.group_cn }}
+
+{% for o_all in grafana_organizations %}
+##########################
 [[servers.group_mappings]]
-group_dn = "cn=grafana-admin,cn=groups,cn=accounts,{{ grafana_auth_ldap_dc |d('dc=example,dc=com') }}"
-org_role = "Admin"
-# The Grafana organization database id, optional, if left out the default org (id 1) will be used.  Setting this allows for multiple group_dn's to be assigned to the same org_role provided the org_id differs
-#org_id = 1
+group_dn = "{{ g.group_cn }},{{ grafana_auth_ldap_dc |d('dc=example,dc=com') }}"
+{% if g.org_role is defined %}
+org_role = "{{ g.org_role |d(org_id_default) }}"
+{% endif %}
+org_id = {{ o_all.id }}
+{%- endfor %}
+
+{% elif g.orgs_name is defined %}
+
+#######################################################
+## Mapping each Organization for group {{ g.group_cn }}
+
+{% set org_id_default=1 %}
+{% for o in g.orgs_name %}
+##########################
+[[servers.group_mappings]]
+group_dn = "{{ g.group_cn }},{{ grafana_auth_ldap_dc |d('dc=example,dc=com') }}"
+{% if g.org_role is defined %}
+org_role = "{{ g.org_role |d(org_id_default) }}"
+{%- endif %}
+
+{% for o_list in grafana_organizations %}
+{% if o_list.name == o %}
+org_id = {{ o_list.id }}
+
+{% endif %}
+{% endfor %}
+{% endfor %}
+
+{% else %}
+###################################
+## Mapping without Org for group {{ g.group_cn }}
 
 [[servers.group_mappings]]
-group_dn = "cn=grafana-editor,cn=groups,cn=accounts,{{ grafana_auth_ldap_dc |d('dc=example,dc=com') }}"
-org_role = "Editor"
+group_dn = "{{ g.group_cn }},{{ grafana_auth_ldap_dc |d('dc=example,dc=com') }}"
+org_role = "{{ g.org_role }}"
 
+{% endif %}
+{% endfor %}
+
+##########################
+## Default role
 [[servers.group_mappings]]
-# If you want to match all (or no ldap groups) then you can use wildcard
-group_dn = "*"
-org_role = "Viewer"
+group_dn = "{{ grafana_auth_map_default_group_cn }},{{ grafana_auth_ldap_dc |d('dc=example,dc=com') }}""
+org_role = "{{ grafana_auth_map_default_role }}"
