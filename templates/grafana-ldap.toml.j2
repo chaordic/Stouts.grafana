@@ -93,5 +93,5 @@ org_role = "{{ g.org_role }}"
 ##########################
 ## Default role
 [[servers.group_mappings]]
-group_dn = "{{ grafana_auth_map_default_group_cn }},{{ grafana_auth_ldap_dc |d('dc=example,dc=com') }}""
+group_dn = "{{ grafana_auth_map_default_group_cn }},{{ grafana_auth_ldap_dc |d('dc=example,dc=com') }}"
 org_role = "{{ grafana_auth_map_default_role }}"
