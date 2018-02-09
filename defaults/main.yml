@@ -6,7 +6,7 @@ grafana_container: false            # Enable container installation
 grafana_apt_repository: deb https://packagecloud.io/grafana/stable/debian/ jessie main
 grafana_apt_key: https://packagecloud.io/gpg.key
 
-grafana_version: 4.1.2-*                      # Set version (set to latest to install latest version)
+grafana_version: 4.6.2                      # Set version (set to latest to install latest version)
 
 grafana_app_mode: production
 
@@ -37,6 +37,7 @@ grafana_user: root
 grafana_password:
 grafana_ssl_mode: disable                   # For "postgres" only, either "disable", "require" or "verify-full"
 grafana_path: grafana.db                    # For "sqlite3" only, path relative to data_path setting
+grafana_database_url: ''
 
 # Session
 grafana_provider: file                      # Either "memory", "file", "redis", "mysql", default is "memory"
@@ -46,8 +47,8 @@ grafana_cookie_secure: false                # If you use session in https only
 grafana_session_life_time: 86400            # Session life time, default is 86400
 
 # Analytics
-grafana_reporting_enabled: true             # Server reporting, sends usage counters to stats.grafana.org every 24 hours.
-grafana_check_for_updates: true             # Set to false to disable all checks to https://grafana.net
+grafana_reporting_enabled: false            # Server reporting, sends usage counters to stats.grafana.org every 24 hours.
+grafana_check_for_updates: false            # Set to false to disable all checks to https://grafana.net
 grafana_google_analytics_ua_id:             # Google Analytics universal tracking code, only enabled if you specify an id here
 
 # Security

@@ -1,0 +1,12 @@
+---
+
+# Deploy container
+- name: deploy | stack
+  shell: >
+    docker stack deploy -c /etc/grafana/docker-compose.yml dash;
+  tags: grafana-deploy
+
+- name: deploy | update stack
+  shell: >
+    docker service update dash_grafana;
+  tags: deploy
