@@ -1,11 +1,22 @@
 ---
 
 - name: grafana-configure | Setup grafana
-  template: src=grafana.ini.j2 dest=/etc/grafana/grafana.ini
+  template:
+    src: grafana.ini.j2
+    dest: /etc/grafana/grafana.ini
+  notify: grafana restart
+
+- name: grafana-configure | Setup grafana
+  template:
+    src: grafana-ldap.toml.j2
+    dest: /etc/grafana/ldap.toml
   notify: grafana restart
 
 - name: grafana-configure | Ensure that Grafana-Server is started
-  service: name=grafana-server state=started enabled=yes
+  service:
+    name: grafana-server
+    state: started
+    enabled: yes
 
 - name: grafana-configure | Install plugins
   command: "grafana-cli plugins install {{item}}"

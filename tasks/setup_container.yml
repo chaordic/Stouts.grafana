@@ -1,12 +1,12 @@
 ---
 
-# Deploy container
-- name: deploy | stack
+- name: Grafana setup | deploy stack
   shell: >
+    docker swarm init |true ;
     docker stack deploy -c /etc/grafana/docker-compose.yml dash;
   tags: grafana-deploy
 
-- name: deploy | update stack
+- name: Grafana setup | update stack
   shell: >
     docker service update dash_grafana;
   tags: deploy

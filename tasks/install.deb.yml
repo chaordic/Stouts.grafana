@@ -1,24 +1,51 @@
 ---
 
-- name: grafana-install-prerequisites | Install Prerequisites
-  apt: name="apt-transport-https"
+- block:
 
-- name: grafana-install | Add debian repository pt. 1
-  apt_key: url='{{grafana_apt_key}}' id=D59097AB
+    - name: grafana-install-prerequisites | Install Prerequisites
+      apt: name="apt-transport-https"
 
-- name: grafana-install | Add debian repository pt. 2
-  apt_repository: repo='{{grafana_apt_repository}}'
+    - name: grafana-install | Add debian repository pt. 1
+      apt_key: url='{{grafana_apt_key}}' id=D59097AB
 
-- set_fact: grafana_release='grafana={{grafana_version}}'
+    - name: grafana-install | Add debian repository pt. 2
+      apt_repository: repo='{{grafana_apt_repository}}'
 
-- name: grafana-install | Install Grafana Release
-  apt: name="{{grafana_release}}"
-  when: grafana_version != "latest"
-  notify:
-    - grafana restart
+    - set_fact: grafana_release='grafana={{grafana_version}}'
 
-- name: grafana-install | Install Grafana Latest
-  apt: name="grafana"
-  when: grafana_version == "latest"
-  notify:
-  - grafana restart
+    - name: grafana-install | Install Grafana Release
+      apt: name="{{grafana_release}}"
+      when: grafana_version != "latest"
+      notify:
+        - grafana restart
+
+    - name: grafana-install | Install Grafana Latest
+      apt: name="grafana"
+      when: grafana_version == "latest"
+      notify:
+      - grafana restart
+
+  when: not grafana_version_beta
+
+- block:
+    - name: download grafana version
+      get_url:
+        url: "https://s3-us-west-2.amazonaws.com/grafana-releases/release/grafana_{{ grafana_version }}_amd64.deb"
+        dest: "/tmp/grafana_{{ grafana_version }}_amd64.deb"
+        mode: 0644
+
+    - name: grafana-install | Install Grafana Beta Release
+      apt:
+        name: "{{ item }}"
+      with_items:
+        - adduser
+        - libfontconfig
+      notify:
+        - grafana restart
+
+    - name: install from deb
+      apt:
+        state: present
+        deb: "/tmp/grafana_{{ grafana_version }}_amd64.deb"
+
+  when: grafana_version_beta

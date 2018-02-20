@@ -16,8 +16,6 @@
   with_items:
     - src: grafana.ini.j2
       dest: /etc/grafana/grafana.ini
-    - src: grafana-ldap.toml.j2
-      dest: /etc/grafana/ldap.toml
     - src: docker-compose.yml.j2
       dest: /etc/grafana/docker-compose.yml
   notify: grafana restart

@@ -7,6 +7,7 @@ grafana_apt_repository: deb https://packagecloud.io/grafana/stable/debian/ jessi
 grafana_apt_key: https://packagecloud.io/gpg.key
 
 grafana_version: 4.6.2                      # Set version (set to latest to install latest version)
+grafana_version_beta: false
 
 grafana_app_mode: production
 
@@ -151,4 +152,5 @@ grafana_nginx_ssl_key: ""
 grafana_nginx_ssl_redirect: "{{grafana_nginx_ssl}}"
 grafana_nginx_port: 80
 
-# vim:sw=2
+## LDAP template
+grafana_organizations: []
