@@ -273,3 +273,8 @@ exchange = {{ grafana_ampq_exchange }}
 [dashboards.json]
 enabled = {{ grafana_dashboard_json_enabled|to_nice_json}}
 path = {{ grafana_dashboard_json_path }}
+
+#################################### Dashboard JSON files ##########################
+[alerting]
+enabled = {{ grafana_alerting_enabled }}
+execute_alerts = {{ grafana_alerting_execute_alerts }}

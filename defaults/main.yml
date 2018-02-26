@@ -143,6 +143,10 @@ grafana_ampq_exchange: grafana_events
 grafana_dashboard_json_enabled: false
 grafana_dashboard_json_path: /var/lib/grafana/dashboards
 
+# Alerts
+grafana_alerting_enabled: true
+grafana_alerting_execute_alerts: true
+
 # Setup nginx configuration
 grafana_nginx: false
 grafana_nginx_servername: "{{inventory_hostname}}"
