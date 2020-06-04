@@ -54,18 +54,7 @@ cert_key = {{ grafana_cert_key }}
 
 #################################### Database ####################################
 [database]
-# Either "mysql", "postgres" or "sqlite3", it's your choice
-type = {{ grafana_type }}
-host = {{ grafana_host }}
-name = {{ grafana_name }}
-user = {{ grafana_user }}
-password = {{ grafana_password }}
-
-# For "postgres" only, either "disable", "require" or "verify-full"
-ssl_mode = {{ grafana_ssl_mode }}
-
-# For "sqlite3" only, path relative to data_path setting
-path = {{ grafana_path }}
+url = {{ grafana_database_url }}
 
 #################################### Session ####################################
 [session]
